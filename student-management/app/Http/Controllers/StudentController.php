@@ -26,66 +26,65 @@ class StudentController extends Controller
     {
         $validated = $request->validate([
             'student_number' =>
-    'required|string|max:50|unique:students,student_number',
+'required|string|max:50|unique:students,student_number',
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'email' =>
-    'required|email|max:255|unique:students,email',
+'required|email|max:255|unique:students,email',
             'course' => 'required|string|max:255',
         ]);
-    }
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
+
+        Student::create($validated);
+        return redirect()->route('students.index')
+            ->with('success', 'Student added successfully!');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    //READ: Display a specific student
+    public function show(Student $student)
     {
-        //
+        return view('students.show', compact('student'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    //UPDATE: Show the edit form
+    public function edit(Student $student)
     {
-        //
+        return view('students.edit', compact('student'));
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    //UPDATE: Save changes
+    public function update(Request $request, Student $student)
     {
-        //
+        $validated = $request->validate([
+            'student_number' => [
+                'required',
+                'string',
+                'max:50',
+                Rule::unique('students', 'student_number')->ignore($student->id),
+            ],
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                Rule::unique('students', 'email')->ignore($student->id),
+            ],
+            'course' => 'required|string|max:255',
+        ]);
+
+        $student->update($validated);
+
+        return redirect()->route('students.index')
+            ->with('success', 'Student updated successfully!');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
+    // DELETE: Remove a student
     public function destroy(string $id)
     {
-        //
+        $student->delete();
+        
+        return redirect()->route('students.index')
+            ->with('success', 'Student deleted successfully!');
     }
 }
+
