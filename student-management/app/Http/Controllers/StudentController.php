@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Controllers;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -11,7 +11,7 @@ class StudentController extends Controller
     // EAD: Display all students
     public function index()
     {
-        $students = Students::latest()->get();
+        $students = Student::latest()->get();
 
         return view('students.index', compact('students'));
     }
@@ -82,7 +82,7 @@ class StudentController extends Controller
     public function destroy(string $id)
     {
         $student->delete();
-        
+
         return redirect()->route('students.index')
             ->with('success', 'Student deleted successfully!');
     }
